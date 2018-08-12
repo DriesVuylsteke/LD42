@@ -18,7 +18,7 @@ public class Blob : MonoBehaviour {
 
 	public int speed = 10;
 	public bool jumping = true;
-	public float jumpResetStart = 0.05f;
+	public float jumpResetStart = 0.3f;
 	public float jumpReset;
 	public float maxVelocity;
 
@@ -29,6 +29,7 @@ public class Blob : MonoBehaviour {
 	private int curSlot = 0;
 
 	public GameObject deathPrefab;
+	public GameObject jumpPrefab;
 
 	//Powers
 	public float shiftStartTime;
@@ -37,13 +38,25 @@ public class Blob : MonoBehaviour {
 
 	public LayerMask groundLayer;
 
+	public CameraFollow cam;
+	public Vector3 lastVel;
+	public float velForShake = 0.2f;
+
+	public GameObject impactParticlePrefab;
+	public GameObject dustSpawnGO;
+
 	void OnDrawGizmos(){
 		Gizmos.color = Color.yellow;
 		Vector2 grav = Physics2D.gravity.normalized;
-		float rotZ = Mathf.Atan2 (grav.y, grav.x) * Mathf.Rad2Deg;
+		float rotZ = Mathf.Atan2 (grav.x, grav.y) * Mathf.Rad2Deg;
 		Vector3 t = Quaternion.Euler(0,0,90) * grav;
 
 		Gizmos.DrawLine (transform.position, transform.position + (t.normalized));
+
+		Gizmos.color = Color.red;
+		Gizmos.DrawLine (transform.position, transform.position + new Vector3(grav.x, grav.y, 0));
+
+		Gizmos.color = Color.green;
 	}
 
 	// Use this for initialization
@@ -53,9 +66,11 @@ public class Blob : MonoBehaviour {
 		col = GetComponent<Collider2D> ();
 		sr = GetComponent<SpriteRenderer> ();
 
+		Physics2D.gravity = new Vector2 (0, -9.81f);
+
 		powers = new Queue<Powers> ();
 
-		Debug.Log (Physics2D.gravity);
+		lastVel = Vector3.zero;
 	}
 	
 	// Update is called once per frame
@@ -64,23 +79,42 @@ public class Blob : MonoBehaviour {
 		MaintainPower ();
 		LimitVeloticy ();
 
+		// Determine impact or large velocity change
+		if (Vector3.Distance (lastVel, rb.velocity) > velForShake && Mathf.Abs(Input.GetAxis("Horizontal")) < 0.3) {
+			cam.Shake (0.06f);
+			Instantiate (impactParticlePrefab, dustSpawnGO.transform);
+		}
+		lastVel = rb.velocity;
+
 		if (!jumping) {
 			float x = Input.GetAxis ("Horizontal");
-			Vector3 vel = rb.velocity;
+			Vector3 vel = rb.velocity.normalized;
 			Vector2 grav = Physics2D.gravity.normalized;
 			float rotZ = Mathf.Atan2 (grav.y, grav.x) * Mathf.Rad2Deg;
-			Vector3 t = Quaternion.Euler(0,0,90) * grav;
-			//Orientate the player so movement feels better
-				t.x = Mathf.Abs (t.x) * x;
-				t.y = -Mathf.Abs (t.y) * x;
-			Debug.Log ("Before:" + vel);
-			vel.x = t.x != 0f ? (t.x * speed * Time.deltaTime * 50) : vel.x;
-			vel.y = t.y != 0f ? (t.y * speed * Time.deltaTime * 50) : vel.y;
-			Debug.Log (vel);
-			rb.velocity = vel;
+
+			RaycastHit2D hit = Physics2D.Raycast (dustSpawnGO.transform.position, grav, 1f);
+			if (hit.collider == null) {
+				jumping = true;
+				jumpReset = jumpResetStart;
+				anim.SetTrigger ("Jump");
+			} else {
+
+				Vector3 t = Quaternion.Euler (0, 0, 90) * grav;
+				if (grav.x > grav.y) {
+					//Orientate the player so movement feels better
+					t.x = Mathf.Abs (t.x) * x;
+					t.y = Mathf.Abs (t.y) * x;
+				} else {
+					t.x = Mathf.Abs (t.x) * x;
+					t.y = -Mathf.Abs (t.y) * x;
+				}
+				vel.x = t.x != 0f ? (t.x * speed * Time.deltaTime * 50) : vel.x;
+				vel.y = t.y != 0f ? (t.y * speed * Time.deltaTime * 50) : vel.y;
+				rb.velocity = vel;
+			}
 		}
 
-		if(jumping)
+		if(jumping && !shifting)
 			TryResetJump ();
 	}
 
@@ -110,8 +144,8 @@ public class Blob : MonoBehaviour {
 	}
 
 	void Jump(){
-		Debug.Log ("Jump");
 		anim.SetTrigger("Jump");
+		Instantiate (jumpPrefab, transform);
 		jumping = true;
 		jumpReset = jumpResetStart;
 		Vector3 target = Camera.main.ScreenToWorldPoint (Input.mousePosition);
@@ -175,7 +209,7 @@ public class Blob : MonoBehaviour {
 
 		Vector2 grav = Physics2D.gravity;
 
-		if (Mathf.Abs(rb.velocity.x) < 0.1 && Mathf.Abs(rb.velocity.y) < 0.1) {
+		if (Mathf.Abs(rb.velocity.x) < 0.15 && Mathf.Abs(rb.velocity.y) < 0.15) {
 			// Also check in the direction of the gravity whether or not you are on a platform
 			// The direction of the gravity is straight down (when gravity rotates, so does our blob)
 			if (jumpReset <= 0) {
@@ -187,6 +221,7 @@ public class Blob : MonoBehaviour {
 
 		if (!jumping) {
 			anim.SetTrigger ("Land");
+			Debug.Log ("Land");
 		}
 	}
 

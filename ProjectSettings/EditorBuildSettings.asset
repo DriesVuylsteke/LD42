@@ -38,3 +38,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Level10.unity
     guid: 49f5bea6badf76c42b19c0def6c4a8a1
+  - enabled: 1
+    path: Assets/Scenes/Level11.unity
+    guid: 10684e862a9cad145973c46396302613
+  - enabled: 1
+    path: Assets/Scenes/Level12.unity
+    guid: 7630a8c83c54b5e4882712fe77c9bc7c
+  - enabled: 1
+    path: Assets/Scenes/Victory.unity
+    guid: f61c7cf66d26fa8468f69efa86fbc64e

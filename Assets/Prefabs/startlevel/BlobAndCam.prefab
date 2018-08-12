@@ -29,21 +29,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &1310181390025210
-GameObject:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4266802473406550}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1 &1397133743528254
 GameObject:
   m_ObjectHideFlags: 1
@@ -95,7 +80,7 @@ GameObject:
   - component: {fileID: 50124583243594698}
   - component: {fileID: 114579386223783514}
   - component: {fileID: 114156899756295008}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Blob
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -151,6 +136,34 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1688196332355198
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4155103790828832}
+  m_Layer: 2
+  m_Name: DustSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4155103790828832
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1688196332355198}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.45, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4760756408400482}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4196641660779702
 Transform:
   m_ObjectHideFlags: 1
@@ -163,19 +176,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4380009207025526}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4266802473406550
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1310181390025210}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4760756408400482}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4319116567521638
 Transform:
@@ -214,7 +214,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1664413304484842}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 4.4, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4380009207025526}
@@ -229,8 +229,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1583824272148936}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.465, y: 4.483, z: 10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -6.65, y: 4.483, z: 10}
+  m_LocalScale: {x: 1.1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4380009207025526}
   m_RootOrder: 0
@@ -245,7 +245,7 @@ Transform:
   m_LocalPosition: {x: -0.017061234, y: 1.0603368, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4266802473406550}
+  - {fileID: 4155103790828832}
   m_Father: {fileID: 4383060063145352}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -475,12 +475,19 @@ MonoBehaviour:
   - {fileID: 114123017730754766}
   deathPrefab: {fileID: 1478728709419654, guid: 2487713b4ce8b764eb989ca97de4bf88,
     type: 2}
+  jumpPrefab: {fileID: 1464715981202822, guid: 88cee9cf382cdd348b54f3b96dff3e54, type: 2}
   shiftStartTime: 0.75
   shiftTime: 0
   shifting: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
+  cam: {fileID: 114644053911082238}
+  lastVel: {x: 0, y: 0, z: 0}
+  velForShake: 0.5
+  impactParticlePrefab: {fileID: 1543258588811822, guid: 8d59d3d004a331a429a017ce4dc0fe2d,
+    type: 2}
+  dustSpawnGO: {fileID: 1688196332355198}
 --- !u!114 &114644053911082238
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -496,6 +503,9 @@ MonoBehaviour:
   smoothSpeed: 0.125
   offset: {x: 0, y: 0, z: -10}
   gravityOffset: {x: 0, y: 0, z: 0}
+  shakeOffset: {x: 0, y: 0, z: 0}
+  initialShakePos: {x: 0, y: 0, z: 0}
+  shakeAmount: 0.7
 --- !u!114 &114728910210241212
 MonoBehaviour:
   m_ObjectHideFlags: 1
